@@ -6,7 +6,5 @@
 
 A blazing fast static blog theme built on Gatsby.js
 
-![lighthouse-performance](./content/assets/lighthouse-performance.png)
-
 - Responsive templates. Looking good on any viewport.
 - Light/Dark mode
