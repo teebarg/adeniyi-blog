@@ -1,62 +1,60 @@
 const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+const { slash } = require(`gatsby-core-utils`)
 
 exports.createPages = async ({ graphql, actions }) => {
   const { createPage } = actions
 
-  const blogPost = path.resolve(`./src/templates/blog-post.js`)
-  const result = await graphql(
-    `
-      {
-        allMarkdownRemark(
-          sort: { fields: [frontmatter___date], order: DESC }
-          limit: 1000
-        ) {
-          edges {
-            node {
-              fields {
-                slug
-              }
-              frontmatter {
-                title
-              }
-            }
+  // query content for WordPress posts
+  const {
+    data: {
+      allWpPost: { edges: allPosts },
+    },
+  } = await graphql(`
+    query {
+      allWpPost {
+        edges {
+          node {
+            id
+            uri
+          }
+          next {
+            id
+          }
+          previous {
+            id
           }
         }
       }
-    `
-  )
+    }
+  `)
 
-  if (result.errors) {
-    throw result.errors
-  }
+  // allPosts = [];
+  const postTemplate = path.resolve(`./src/templates/blog-post.js`)
 
-  // Create blog posts pages.
-  const posts = result.data.allMarkdownRemark.edges
-
-  posts.forEach((post, index) => {
-    const previous = index === posts.length - 1 ? null : posts[index + 1].node
-    const next = index === 0 ? null : posts[index - 1].node
-
+  allPosts.forEach(post => {
     createPage({
-      path: post.node.fields.slug,
-      component: blogPost,
+      // will be the url for the page
+      path: post.node.uri,
+      // specify the component template of your choice
+      component: slash(postTemplate),
+      // In the ^template's GraphQL query, 'id' will be available
+      // as a GraphQL variable to query for this post's data.
       context: {
-        slug: post.node.fields.slug,
-        previous,
-        next,
+        id: post.node.id,
+        nextPage: post.next && post.next.id,
+        previousPage: post.previous && post.previous.id,
       },
     })
   })
 
   // Create blog post list pages
   const postsPerPage = 5
-  const numPages = Math.ceil(posts.length / postsPerPage)
+  const numPages = Math.ceil(allPosts.length / postsPerPage)
 
   Array.from({ length: numPages }).forEach((_, i) => {
     createPage({
       path: i === 0 ? `/` : `/${i + 1}`,
-      component: path.resolve("./src/templates/blog-list.tsx"),
+      component: path.resolve("./src/templates/blog-list.js"),
       context: {
         limit: postsPerPage,
         skip: i * postsPerPage,
@@ -67,15 +65,14 @@ exports.createPages = async ({ graphql, actions }) => {
   })
 }
 
-exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
-
-  if (node.internal.type === `MarkdownRemark`) {
-    const value = createFilePath({ node, getNode })
-    createNodeField({
-      name: `slug`,
-      node,
-      value,
+exports.onCreateWebpackConfig = ({ stage, actions }) => {
+  if (stage.startsWith("develop")) {
+    actions.setWebpackConfig({
+      resolve: {
+        alias: {
+          "react-dom": "@hot-loader/react-dom",
+        },
+      },
     })
   }
 }

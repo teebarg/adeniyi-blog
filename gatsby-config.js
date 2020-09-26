@@ -1,15 +1,20 @@
+// require .env.development or .env.production
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+
 module.exports = {
-  pathPrefix: "/leonids",
+  pathPrefix: "/adeniyi",
   siteMetadata: {
-    title: `Leonids`,
+    title: `Adeniyi Blog`,
     author: {
-      name: `@ry_zou`,
-      summary: `web dev`,
+      name: `@adeniyi`,
+      summary: `Software Engineer`,
     },
-    description: `A simple, fixed sidebar two columns Gatsby.js blog starter.`,
-    siteUrl: `https://renyuanz.github.io/leonids`,
+    description: `A Blog`,
+    siteUrl: process.env.WPGRAPHQL_URL || `https://adeniyi.tech`,
     social: {
-      twitter: `ry_zou`,
+      twitter: `neyostica`,
     },
     defaultImage: "images/bg.jpeg",
   },
@@ -17,15 +22,35 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
-        path: `${__dirname}/content/blog`,
-        name: `blog`,
+        path: `${__dirname}/content/assets`,
+        name: `assets`,
       },
     },
     {
-      resolve: `gatsby-source-filesystem`,
+      resolve: `gatsby-source-wordpress-experimental`,
       options: {
-        path: `${__dirname}/content/assets`,
-        name: `assets`,
+        url:
+          process.env.WPGRAPHQL_URL ||
+          `http://blog.local/graphql`,
+        verbose: true,
+        develop: {
+          hardCacheMediaFiles: true,
+        },
+        debug: {
+          graphql: {
+            writeQueriesToDisk: true,
+          },
+        },
+        type: {
+          Post: {
+            limit:
+              process.env.NODE_ENV === `development`
+                ? // Lets just pull 50 posts in development to make it easy on ourselves.
+                  50
+                : // and we don't actually need more than 5000 in production for this particular site
+                  5000,
+          },
+        },
       },
     },
     {
@@ -38,13 +63,6 @@ module.exports = {
               maxWidth: 590,
             },
           },
-          {
-            resolve: `gatsby-remark-responsive-iframe`,
-            options: {
-              wrapperStyle: `margin-bottom: 1.0725rem`,
-            },
-          },
-          `gatsby-remark-prismjs`,
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
         ],
@@ -62,8 +80,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Ryz`,
-        short_name: `Ryz`,
+        name: `Adeniyi Aderounmu`,
+        short_name: `Adeniyi`,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#663399`,
@@ -83,5 +101,7 @@ module.exports = {
     `gatsby-plugin-offline`,
     "gatsby-plugin-dark-mode",
     `gatsby-plugin-postcss`,
+    `gatsby-plugin-styled-components`,
+    `gatsby-plugin-transition-link`
   ],
 }

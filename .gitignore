@@ -1,3 +1,5 @@
+WordPress/GraphQL
+
 # Logs
 logs
 *.log
@@ -53,6 +55,10 @@ typings/
 
 # dotenv environment variable files
 .env*
+.DS_Store
+.env.*
+!.env.GATSBY_CONCURRENT_DOWNLOAD
+.DS_Store
 
 # gatsby files
 .cache/
@@ -67,3 +73,5 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+
+.wordpress-cache

@@ -1,31 +1,31 @@
 import React from "react"
-import { Link, graphql } from "gatsby"
-
+import { graphql } from "gatsby"
+import Navigation from "../components/navigation"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import Img from "gatsby-image"
 import { rhythm, scale } from "../utils/typography"
+import Zoom from "react-reveal/Zoom"
 
 const BlogPostTemplate = ({ data, pageContext, location }) => {
-  const post = data.markdownRemark
-  // const siteTitle = data.site.siteMetadata.title
-  const { previous, next } = pageContext
+  const post = data.page
 
   return (
     <Layout location={location} title="Home">
-      <SEO
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
-      />
+      <SEO title={post.title} description={post.excerpt} />
       <article>
-        <header>
-          <h1
-            style={{
-              marginBottom: 0,
-            }}
-          >
-            {post.frontmatter.title}
-          </h1>
+        {post.featuredImage && (
+          <Img
+            fluid={post.featuredImage.node.remoteFile.childImageSharp.fluid}
+            style={{ marginLeft: "-20px", marginRight: "-20px" }}
+          />
+        )}
+        <header className="mt-4">
+          <h1>{post.title}</h1>
+          <Zoom>
+            <Bio />
+          </Zoom>
           <p
             style={{
               ...scale(-1 / 5),
@@ -33,46 +33,21 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
               marginBottom: rhythm(1),
             }}
           >
-            {post.frontmatter.date}
+            {post.date}
           </p>
         </header>
-        <section dangerouslySetInnerHTML={{ __html: post.html }} />
-        <hr
-          style={{
-            marginBottom: rhythm(1),
-          }}
-        />
-        <footer>
-          <Bio />
-        </footer>
+        <Zoom>
+          <section dangerouslySetInnerHTML={{ __html: post.content }} />
+        </Zoom>
       </article>
-
-      <nav>
-        <ul
-          style={{
-            display: `flex`,
-            flexWrap: `wrap`,
-            justifyContent: `space-between`,
-            listStyle: `none`,
-            padding: 0,
-          }}
-        >
-          <li>
-            {previous && (
-              <Link to={previous.fields.slug} rel="prev">
-                ← {previous.frontmatter.title}
-              </Link>
-            )}
-          </li>
-          <li>
-            {next && (
-              <Link to={next.fields.slug} rel="next">
-                {next.frontmatter.title} →
-              </Link>
-            )}
-          </li>
-        </ul>
-      </nav>
+      <Navigation
+        isFirst={!data.previousPage}
+        isLast={!data.nextPage}
+        prevPage={data.previousPage && data.previousPage.uri}
+        nextPage={data.nextPage && data.nextPage.uri}
+        prevContent={data.previousPage && data.previousPage.title}
+        nextContent={data.nextPage && data.nextPage.title}
+      />
     </Layout>
   )
 }
@@ -80,21 +55,34 @@ const BlogPostTemplate = ({ data, pageContext, location }) => {
 export default BlogPostTemplate
 
 export const pageQuery = graphql`
-  query BlogPostBySlug($slug: String!) {
+  query BlogPostBySlug($id: String!, $nextPage: String, $previousPage: String) {
     site {
       siteMetadata {
         title
       }
     }
-    markdownRemark(fields: { slug: { eq: $slug } }) {
-      id
-      excerpt(pruneLength: 160)
-      html
-      frontmatter {
-        title
-        date(formatString: "MMMM DD, YYYY")
-        description
+    page: wpPost(id: { eq: $id }) {
+      title
+      content
+      excerpt
+      date(formatString: "MMMM DD, YYYY")
+      featuredImage {
+        node {
+          remoteFile {
+            ...HeroImage
+          }
+        }
       }
+    }
+
+    nextPage: wpPost(id: { eq: $nextPage }) {
+      title
+      uri
+    }
+
+    previousPage: wpPost(id: { eq: $previousPage }) {
+      title
+      uri
     }
   }
 `

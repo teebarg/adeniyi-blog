@@ -1,7 +1,12 @@
+/* @tailwind base; */
+@tailwind components;
 @tailwind utilities;
 
 body {
+  --color-white: #fff;
+  --cardBg: #fff;
   --bg: #fff;
+  --bg-secondary: #e2e8f0;
   --lightBg: #f5f5f5;
   --textNormal: #181818;
   --textTitle: #181818;
@@ -14,12 +19,23 @@ body {
 body.dark {
   -webkit-font-smoothing: antialiased;
 
+  --color-white: #fff;
+  --cardBg: #1a202c;
   --bg: #1e1e1e;
-  --lightBg: #0f0f0f;
+  --bg-secondary: #2d3748;
+  --lightBg: #2d3748;
   --textNormal: #e0e0e0;
   --textTitle: #fff;
   --textLink: #ff6363;
   --hr: hsla(0, 0%, 100%, 0.2);
+}
+
+a {
+  box-shadow: none;
+}
+
+ul {
+  margin-left: 0;
 }
 
 a.gatsby-resp-image-link {
@@ -38,6 +54,7 @@ h3,
 h4,
 h5,
 h6,
+p,
 blockquote {
   color: var(--textTitle);
 }
@@ -72,37 +89,8 @@ button {
 
   outline: 0;
 }
-.sidebar {
-  height: 200px;
-  width: 100%;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  text-align: center;
-  background-color: var(--lightBg);
-}
 
-.main-content {
-  background-color: var(--bg);
-  position: absolute;
-  top: 200px;
-  z-index: 10;
-  padding: 0 20px 0;
-  margin-left: 0;
-}
-
-@media only screen and (min-width: 768px) {
-  .sidebar {
-    height: 100vh;
-    width: 380px;
-  }
-  .main-content {
-    padding: 0 100px 0;
-    height: 100vh;
-    width: calc(100% - 380px);
-    margin-left: 380px;
-    top: 0;
-  }
+.code {
+  max-width: 90%;
+  margin: auto !important;
 }
