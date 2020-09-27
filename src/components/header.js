@@ -1,9 +1,10 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
 import ToggleTheme from "./themeToggler"
 import Headroom from "react-headroom"
 import AniLink from "gatsby-plugin-transition-link/AniLink"
+import BlogContext from "./context"
 
 const Header = () => {
   const [open, setOpen] = useState(false)
@@ -11,7 +12,7 @@ const Header = () => {
     query HeaderQuery {
       avatar: file(absolutePath: { regex: "/logo.png/" }) {
         childImageSharp {
-          fluid(maxWidth: 140, quality: 100) {
+          fluid(maxWidth: 130, quality: 100) {
             ...GatsbyImageSharpFluid
             ...GatsbyImageSharpFluidLimitPresentationSize
           }
@@ -19,6 +20,8 @@ const Header = () => {
       }
     }
   `)
+
+  const { author } = useContext(BlogContext);
 
   return (
     <Headroom>
@@ -68,7 +71,7 @@ const Header = () => {
           }
         >
           <a
-            href={process.env.PORTFOLIO}
+            href={author.portfolio}
             className="block px-2 hover:bg-gray-800 text-gray-500"
             target="_blank"
             rel="noreferrer"

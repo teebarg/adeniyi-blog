@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { scale } from "../utils/typography"
+import BlogContext from "./context"
 
 const Copyright = styled.footer`
   padding: 10px 0;
@@ -47,6 +48,9 @@ const SocialLink = styled.a`
 `
 
 const Footer = () => {
+
+  const { author, social } = useContext(BlogContext);
+  
   const section = (
     <Section className="bg-gray-900">
       <div className="container flex flex-col md:flex-row gap-8 md:gap-0">
@@ -62,7 +66,7 @@ const Footer = () => {
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
             </svg>
-            <small>{process.env.EMAIL}</small>
+            <small>{author.email}</small>
           </Flex>
           <Flex>
             <svg
@@ -73,7 +77,7 @@ const Footer = () => {
             >
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
             </svg>
-            <small>{process.env.PHONE}</small>
+            <small>{author.phone}</small>
           </Flex>
           <Flex>
             <SocialLink background="#3b5998" href="/" target="_blank">
@@ -87,7 +91,7 @@ const Footer = () => {
             </SocialLink>
             <SocialLink
               background="#0e76a8"
-              href={process.env.LINKENIN}
+              href={social.linkedin}
               target="_blank"
             >
               <svg
@@ -100,7 +104,7 @@ const Footer = () => {
             </SocialLink>
             <SocialLink
               background="#00acee"
-              href={process.env.TWITTER}
+              href={social.twitter}
               target="_blank"
             >
               <svg
@@ -118,7 +122,7 @@ const Footer = () => {
           <small>
             Don’t miss any updates of our new templates and extensions.!
           </small>
-          <form>
+          <form name="subscribe" method="POST" data-netlify="true">
             <div className="flex flex-wrap -mx-3 mt-4 mb-6">
               <div className="w-full px-3">
                 <label
@@ -131,6 +135,7 @@ const Footer = () => {
                   className="appearance-none block bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   id="email"
                   type="text"
+                  name="email"
                   placeholder="Email"
                 />
                 <button className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded">

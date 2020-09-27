@@ -7,6 +7,8 @@ import styled from "styled-components"
 import "./global.css"
 import { device } from "./device"
 import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader"
+import { BlogProvider } from "./context"
+import { useStaticQuery, graphql } from "gatsby"
 deckDeckGoHighlightElement()
 
 const GlobalStyle = createGlobalStyle`
@@ -38,14 +40,40 @@ const Article = styled.div`
   }
 `
 const Layout = ({ location, children }) => {
+
+  const data = useStaticQuery(graphql`
+    query BioQuery {
+      site {
+        siteMetadata {
+          author {
+            name
+            summary
+            phone
+            email
+            portfolio
+          }
+          social {
+            twitter
+            linkedin
+            facebook
+          }
+        }
+      }
+    }
+  `)
+
+  const userData = data.site.siteMetadata
+
   return (
     <div>
-      <GlobalStyle />
-      <Header />
-      <Body className="md:mx-auto flex flex-col items-center px-4 md:px-6">
-        <Article>{children}</Article>
-      </Body>
-      <Footer />
+      <BlogProvider value={userData}>
+        <GlobalStyle />
+        <Header />
+        <Body className="md:mx-auto flex flex-col items-center px-4 md:px-6">
+          <Article>{children}</Article>
+        </Body>
+        <Footer />
+      </BlogProvider>
     </div>
   )
 }
